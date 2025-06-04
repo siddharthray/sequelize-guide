@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Sequelize - Interactive Learning Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #4a5568;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 25px;
+            color: #4a5568;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+            position: relative;
+            border: 1px solid #4a5568;
+        }
+
+        .code-header {
+            background: #2d3748;
+            color: #cbd5e0;
+            padding: 10px 20px;
+            margin: -25px -25px 20px -25px;
+            border-radius: 15px 15px 0 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #5a67d8;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-left: 5px solid #fc8181;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+            border-left: 5px solid #48bb78;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+            border-left: 5px solid #4299e1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(5px);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .feature-list li:before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+            top: 10px;
+        }
+
+        .example-showcase {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 2px dashed #cbd5e0;
+        }
+
+        .example-title {
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .example-title:before {
+            content: "🚀";
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                justify-content: center;
+            }
+            
+            .content-section {
+                padding: 20px;
+            }
+        }
+
+        /* Syntax highlighting */
+        .keyword { color: #c792ea; }
+        .string { color: #c3e88d; }
+        .comment { color: #546e7a; font-style: italic; }
+        .function { color: #82aaff; }
+        .number { color: #f78c6c; }
+        .operator { color: #89ddff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>🎓 Master Sequelize</h1>
+            <p>Complete TypeScript guide using our Interview System as real-world examples</p>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            <p style="font-size: 1rem; margin-top: 10px;">📊 Progress: <span id="progressText">0%</span></p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showSection('intro')">🚀 Introduction</button>
+            <button class="tab-btn" onclick="showSection('setup')">⚙️ Setup</button>
+            <button class="tab-btn" onclick="showSection('models')">🏗️ Models</button>
+            <button class="tab-btn" onclick="showSection('relationships')">🔗 Relationships</button>
+            <button class="tab-btn" onclick="showSection('crud')">📝 CRUD</button>
+            <button class="tab-btn" onclick="showSection('querying')">🔍 Querying</button>
+            <button class="tab-btn" onclick="showSection('advanced')">🚀 Advanced</button>
+            <button class="tab-btn" onclick="showSection('best-practices')">✅ Best Practices</button>
+        </div>
+
+        <!-- Introduction Section -->
+        <div id="intro" class="content-section active">
+            <div class="section-header">
+                <span class="section-icon">🎯</span>
+                <h2 class="section-title">What is Sequelize?</h2>
+            </div>
+
+            <div class="highlight-box">
+                <strong>Sequelize</strong> is a powerful Object-Relational Mapping (ORM) library for Node.js that supports PostgreSQL, MySQL, MariaDB, SQLite, and Microsoft SQL Server.
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>🎯 Why Use Sequelize?</h3>
+                    <ul class="feature-list">
+                        <li>Type Safety with TypeScript</li>
+                        <li>Database Agnostic</li>
+                        <li>Automatic Relationship Management</li>
+                        <li>Built-in Validation</li>
+                        <li>Migration Support</li>
+                        <li>Query Builder</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>🏗️ Our Interview System</h3>
+                    <p>Throughout this guide, we'll use examples from our interview scheduling system:</p>
+                    <ul class="feature-list">
+                        <li>Users and Authentication</li>
+                        <li>Interview Scheduling</li>
+                        <li>Participant Management</li>
+                        <li>Feedback Collection</li>
+                        <li>Availability Tracking</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                💡 <strong>Pro Tip:</strong> This guide uses real examples from the interview system we built together. Each concept is demonstrated with actual code you can use!
+            </div>
+        </div>
+
+        <!-- Setup Section -->
+        <div id="setup" class="content-section">
+            <div class="section-header">
+                <span class="section-icon">⚙️</span>
+                <h2 class="section-title">Setup & Configuration</h2>
+            </div>
+
+            <div class="example-showcase">
+                <div class="example-title">Installation</div>
+                <div class="code-block">
+                    <div class="code-header">
+                        Terminal
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+<pre><code># Core packages
+npm install sequelize sequelize-typescript
+
+# Database driver (PostgreSQL example)
+npm install pg pg-hstore @types/pg
+
+# For migrations
+npm install sequelize-cli</code></pre>
+                </div>
+            </div>
+
+            <div class="example-showcase">
+                <div class="example-title">Database Configuration</div>
+                <div class="code-block">
+                    <div class="code-header">
+                        src/config/database.ts
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+<pre><code><span class="keyword">import</span> { <span class="function">Sequelize</span> } <span class="keyword">from</span> <span class="string">'sequelize-typescript'</span>;
+
+<span class="keyword">export const</span> <span class="function">sequelize</span> = <span class="keyword">new</span> <span class="function">Sequelize</span>({
+  <span class="keyword">database:</span> process.env.DB_NAME || <span class="string">'interview_system'</span>,
+  <span class="keyword">username:</span> process.env.DB_USER || <span class="string">'postgres'</span>,
+  <span class="keyword">password:</span> process.env.DB_PASSWORD || <span class="string">'password'</span>,
+  <span class="keyword">host:</span> process.env.DB_HOST || <span class="string">'localhost'</span>,
+  <span class="keyword">port:</span> <span class="function">parseInt</span>(process.env.DB_PORT || <span class="string">'5432'</span>),
+  <span class="keyword">dialect:</span> <span class="string">'postgres'</span>,
+  
+  <span class="comment">// Tell Sequelize where to find models</span>
+  <span class="keyword">models:</span> [__dirname + <span class="string">'/../models'</span>],
+  
+  <span class="comment">// Logging for debugging</span>
+  <span class="keyword">logging:</span> console.log,
+  
+  <span class="comment">// Connection pool settings</span>
+  <span class="keyword">pool:</span> {
+    <span class="keyword">max:</span> <span class="number">5</span>,
+    <span class="keyword">min:</span> <span class="number">0</span>,
+    <span class="keyword">acquire:</span> <span class="number">30000</span>,
+    <span class="keyword">idle:</span> <span class="number">10000</span>,
+  },
+});</code></pre>
+                </div>
+            </div>
+
+            <div class="info-box">
+                🔧 <strong>Environment Variables:</strong> Always use environment variables for sensitive database credentials. Create a <code>.env</code> file for local development.
+            </div>
+        </div>
+
+        <!-- Models Section -->
+        <div id="models" class="content-section">
+            <div class="section-header">
+                <span class="section-icon">🏗️</span>
+                <h2 class="section-title">Model Definition</h2>
+            </div>
+
+            <div class="example-showcase">
+                <div class="example-title">Basic User Model</div>
+                <div class="code-block">
+                    <div class="code-header">
+                        src/models/user.ts
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+<pre><code><span class="keyword">import</span> { <span class="function">Table</span>, <span class="function">Column</span>, <span class="function">Model</span>, <span class="function">DataType</span> } <span class="keyword">from</span> <span class="string">'sequelize-typescript'</span>;
+
+<span class="comment">// 1. Define interface for type safety</span>
+<span class="keyword">export interface</span> <span class="function">UserAttributes</span> {
+  <span class="keyword">id?:</span> number;
+  <span class="keyword">email:</span> string;
+  <span class="keyword">firstName:</span> string;
+  <span class="keyword">lastName:</span> string;
+  <span class="keyword">createdAt?:</span> Date;
+  <span class="keyword">updatedAt?:</span> Date;
+}
+
+<span class="comment">// 2. Create model class</span>
+<span class="operator">@</span><span class="function">Table</span>({
+  <span class="keyword">tableName:</span> <span class="string">'users'</span>,
+  <span class="keyword">timestamps:</span> <span class="keyword">true</span>,
+  <span class="keyword">createdAt:</span> <span class="string">'created_at'</span>,
+  <span class="keyword">updatedAt:</span> <span class="string">'updated_at'</span>,
+})
+<span class="keyword">export class</span> <span class="function">User</span> <span class="keyword">extends</span> <span class="function">Model</span>&lt;<span class="function">UserAttributes</span>&gt; {
+  
+  <span class="operator">@</span><span class="function">Column</span>({
+    <span class="keyword">type:</span> DataType.INTEGER,
+    <span class="keyword">primaryKey:</span> <span class="keyword">true</span>,
+    <span class="keyword">autoIncrement:</span> <span class="keyword">true</span>,
+  })
+  <span class="keyword">id!</span>: number;
+
+  <span class="operator">@</span><span class="function">Column</span>({
+    <span class="keyword">type:</span> DataType.STRING(<span class="number">255</span>),
+    <span class="keyword">allowNull:</span> <span class="keyword">false</span>,
+    <span class="keyword">unique:</span> <span class="keyword">true</span>,
+    <span class="keyword">validate:</span> {
+      <span class="keyword">isEmail:</span> <span class="keyword">true</span>,
+    },
+  })
+  <span class="keyword">email!</span>: string;
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>DataType</th>
+                            <th>SQL Equivalent</th>
+                            <th>TypeScript Type</th>
+                            <th>Example Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>DataType.STRING(255)</td>
+                            <td>VARCHAR(255)</td>
+                            <td>string</td>
+                            <td>Names, emails</td>
+                        </tr>
+                        <tr>
+                            <td>DataType.INTEGER</td>
+                            <td>INTEGER</td>
+                            <td>number</td>
+                            <td>IDs, counts</td>
+                        </tr>
+                        <tr>
+                            <td>DataType.TEXT</td>
+                            <td>TEXT</td>
+                            <td>string</td>
+                            <td>Long descriptions</td>
+                        </tr>
+                        <tr>
+                            <td>DataType.DATE</td>
+                            <td>DATETIME</td>
+                            <td>Date</td>
+                            <td>Timestamps</td>
+                        </tr>
+                        <tr>
+                            <td>DataType.BOOLEAN</td>
+                            <td>BOOLEAN</td>
+                            <td>boolean</td>
+                            <td>Flags, status</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Relationships Section -->
+        <div id="relationships" class="content-section">
+            <div class="section-header">
+                <span class="section-icon">🔗</span>
+                <h2 class="section-title">Relationships & Associations</h2>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>One-to-Many (1:N)</h3>
+                    <p>One User can create many Interviews</p>
+                    <div class="code-block">
+<pre><code><span class="comment">// User.ts</span>
+<span class="operator">@</span><span class="function">HasMany</span>(() => Interview)
+<span class="keyword">interviews!</span>: Interview[];
+
+<span class="comment">// Interview.ts</span>
+<span class="operator">@</span><span class="function">ForeignKey</span>(() => User)
+<span class="keyword">createdBy!</span>: number;
+
+<span class="operator">@</span><span class="function">BelongsTo</span>(() => User)
+<span class="keyword">creator!</span>: User;</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Many-to-Many (N:M)</h3>
+                    <p>Users and Interviews through Participants</p>
+                    <div class="code-block">
+<pre><code><span class="comment">// InterviewParticipant.ts</span>
+<span class="operator">@</span><span class="function">ForeignKey</span>(() => Interview)
+<span class="keyword">interviewId!</span>: number;
+
+<span class="operator">@</span><span class="function">ForeignKey</span>(() => User)
+<span class="keyword">userId!</span>: number;
+
+<span class="operator">@</span><span class="function">BelongsTo</span>(() => Interview)
+<span class="keyword">interview!</span>: Interview;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example-showcase">
+                <div class="example-title">Real Example: Interview with Participants</div>
+                <div class="code-block">
+                    <div class="code-header">
+                        Complex Relationship Query
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+<pre><code><span class="comment">// Get interview with all participants and their details</span>
+<span class="keyword">const</span> <span class="function">interview</span> = <span class="keyword">await</span> Interview.<span class="function">findByPk</span>(<span class="number">1</span>, {
+  <span class="keyword">include:</span> [
+    {
+      <span class="keyword">model:</span> InterviewParticipant,
+      <span class="keyword">as:</span> <span class="string">'participants'</span>,
+      <span class="keyword">include:</span> [
+        { <span class="keyword">model:</span> User, <span class="keyword">as:</span> <span class="string">'user'</span> }
+      ]
+    },
+    { <span class="keyword">model:</span> Candidate, <span class="keyword">as:</span> <span class="string">'candidate'</span> },
+    { <span class="keyword">model:</span> Feedback, <span class="keyword">as:</span> <span class="string">'feedback'</span> }
+  ]
+});</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRUD Section -->
+        <div id="crud" class="content-section">
+            <div class="section-header">
+                <span class="section-icon">📝</span>
+                <h2 class="section-title">CRUD Operations</h2>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>📝 Create</h3>
+                    <div class="code-block">
+<pre><code><span class="comment">// Create new interview</span>
+<span class="keyword">const</span> <span class="function">interview</span> = <span class="keyword">await</span> Interview.<span class="function">create</span>({
+  <span class="keyword">candidateId:</span> <span class="number">1</span>,
+  <span class="keyword">scheduledStart:</span> <span class="keyword">new</span> <span class="function">Date</span>(),
+  <span class="keyword">scheduledEnd:</span> <span class="keyword">new</span> <span class="function">Date</span>(),
+  <span class="keyword">status:</span> <span class="string">'scheduled'</span>
+});</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🔍 Read</h3>
+                    <div class="code-block">
+<pre><code><span class="comment">// Find by primary key</span>
+<span class="keyword">const</span> <span class="function">user</span> = <span class="keyword">await</span> User.<span class="function">findByPk</span>(<span class="number">1</span>);
+
+<span class="comment">// Find with conditions</span>
+<span class="keyword">const</span> <span class="function">interviews</span> = <span class="keyword">await</span> Interview.<span class="function">findAll</span>({
+  <span class="keyword">where:</span> { <span class="keyword">status:</span> <span class="string">'scheduled'</span> }
+});</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>✏️ Update</h3>
+                    <div class="code-block">
+<pre><code><span class="comment">// Update instance</span>
+<span class="keyword">const</span> <span class="function">interview</span> = <span class="keyword">await</span> Interview.<span class="function">findByPk</span>(<span class="number">1</span>);
+<span class="keyword">if</span> (interview) {
+  interview.status = <span class="string">'completed'</span>;
+  <span class="keyword">await</span> interview.<span class="function">save</span>();
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🗑️ Delete</h3>
+                    <div class="code-block">
+<pre><code><span class="comment">// Delete by instance</span>
+<span class="keyword">const</span> <span class="function">interview</span> = <span class="keyword">await</span> Interview.<span class="function">findByPk</span>(<span class="number">1</span>);
+<span class="keyword">if</span> (interview) {
+  <span class="keyword">await</span> interview.<span class="function">destroy</span>();
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Querying Section -->
+        <div id="querying" class="content-section">
+            <div class="section-header">
+                <span class="section-icon">🔍</span>
+                <h2 class="section-title">Querying Data</h2>
+            </div>
+
+            <div class="example-showcase">
+                <div class="example-title">Advanced Filtering (From Our Interview Routes)</div>
+                <div class="code-block">
+                    <div class="code-header">
+                        Real-world Query Example
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+<pre><code><span class="keyword">import</span> { <span class="function">Op</span> } <span class="keyword">from</span> <span class="string">'sequelize'</span>;
+
+<span class="comment">// Build dynamic where conditions</span>
+<span class="keyword">const</span> <span class="function">whereConditions</span>: any = {};
+
+<span class="keyword">if</span> (status) {
+  whereConditions.status = status;
+}
+
+<span class="keyword">if</span> (startDate) {
+  whereConditions.scheduledStart = { [Op.gte]: <span class="keyword">new</span> <span class="function">Date</span>(startDate) };
+}
+
+<span class="keyword">if</span> (endDate) {
+  whereConditions.scheduledStart = {
+    ...whereConditions.scheduledStart,
+    [Op.lte]: <span class="keyword">new</span> <span class="function">Date</span>(endDate)
+  };
+}
+
+<span class="comment">// Execute query with includes</span>
+<span class="keyword">const</span> <span class="function">interviews</span> = <span class="keyword">await</span> Interview.<span class="function">findAll</span>({
+  <span class="keyword">where:</span> whereConditions,
+  <span class="keyword">include:</span> [{
+    <span class="keyword">model:</span> InterviewParticipant,
+    <span class="keyword">where:</span> { <span class="keyword">userId:</span> currentUserId },
+    <span class="keyword">required:</span> <span class="keyword">true</span> <span class="comment">// INNER JOIN</span>
+  }],
+  <span class="keyword">order:</span> [[<span class="string">'scheduledStart'</span>, <span class="string">'ASC'</span>]]
+});</code></pre>
+            </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>🔍 Common Operators</h3>
+                    <div class="code-block">
+<pre><code><span class="comment">// Comparison operators</span>
+{ <span class="keyword">rating:</span> { [Op.gte]: <span class="number">4</span> } }        <span class="comment">// >= 4</span>
+{ <span class="keyword">status:</span> { [Op.ne]: <span class="string">'cancelled'</span> } } <span class="comment">// != cancelled</span>
+{ <span class="keyword">name:</span> { [Op.like]: <span class="string">'%john%'</span> } }    <span class="comment">// LIKE %john%</span>
+{ <span class="keyword">id:</span> { [Op.in]: [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] } }      <span class="comment">// IN (1,2,3)</span></code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📊 Pagination & Sorting</h3>
+                    <div class="code-block">
+<pre><code><span class="comment">// Pagination with count</span>
+<span class="keyword">const</span> { <span class="function">count</span>, <span class="function">rows</span> } = <span class="keyword">await</span> Interview.<span class="function">findAndCountAll</span>({
+  <span class="keyword">limit:</span> <span class="number">10</span>,
+  <span class="keyword">offset:</span> <span class="number">20</span>,
+  <span class="keyword">order:</span> [[<span class="string">'createdAt'</span>, <span class="string">'DESC'</span>]]
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Section -->
+        <div id="advanced" class="content-section">
+            <div class="section-header">
+                <span class="section-icon">🚀</span>
+                <h2 class="section-title">Advanced Features</h2>
+            </div>
+
+            <div class="example-showcase">
+                <div class="example-title">Aggregations & Group By</div>
+                <div class="code-block">
+                    <div class="code-header">
+                        Statistics Query
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+<pre><code><span class="keyword">import</span> { <span class="function">sequelize</span> } <span class="keyword">from</span> <span class="string">'../config/database'</span>;
+
+<span class="comment">// Count interviews by status</span>
+<span class="keyword">const</span> <span class="function">statusCounts</span> = <span class="keyword">await</span> Interview.<span class="function">findAll</span>({
+  <span class="keyword">attributes:</span> [
+    <span class="string">'status'</span>,
+    [sequelize.<span class="function">fn</span>(<span class="string">'COUNT'</span>, sequelize.<span class="function">col</span>(<span class="string">'id'</span>)), <span class="string">'count'</span>]
+  ],
+  <span class="keyword">group:</span> [<span class="string">'status'</span>]
+});
+
+<span class="comment">// Average rating for completed interviews</span>
+<span class="keyword">const</span> <span class="function">avgRating</span> = <span class="keyword">await</span> Feedback.<span class="function">findOne</span>({
+  <span class="keyword">attributes:</span> [
+    [sequelize.<span class="function">fn</span>(<span class="string">'AVG'</span>, sequelize.<span class="function">col</span>(<span class="string">'rating'</span>)), <span class="string">'averageRating'</span>]
+  ],
+  <span class="keyword">where:</span> { <span class="keyword">interviewId:</span> <span class="number">1</span> }
+});</code></pre>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <strong>🔥 Pro Tip:</strong> Use transactions for operations that need to be atomic (all succeed or all fail).
+                <div class="code-block">
+<pre><code><span class="keyword">const</span> <span class="function">transaction</span> = <span class="keyword">await</span> sequelize.<span class="function">transaction</span>();
+
+<span class="keyword">try</span> {
+  <span class="keyword">const</span> <span class="function">interview</span> = <span class="keyword">await</span> Interview.<span class="function">create</span>(data, { transaction });
+  <span class="keyword">await</span> InterviewParticipant.<span class="function">create</span>(participantData, { transaction });
+  
+  <span class="keyword">await</span> transaction.<span class="function">commit</span>();
+} <span class="keyword">catch</span> (error) {
+  <span class="keyword">await</span> transaction.<span class="function">rollback</span>();
+  <span class="keyword">throw</span> error;
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Practices Section -->
+        <div id="best-practices" class="content-section">
+            <div class="section-header">
+                <span class="section-icon">✅</span>
+                <h2 class="section-title">Best Practices</h2>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>🛡️ Validation</h3>
+                    <div class="code-block">
+<pre><code><span class="operator">@</span><span class="function">Column</span>({
+  <span class="keyword">type:</span> DataType.STRING(<span class="number">255</span>),
+  <span class="keyword">allowNull:</span> <span class="keyword">false</span>,
+  <span class="keyword">validate:</span> {
+    <span class="keyword">notEmpty:</span> <span class="keyword">true</span>,
+    <span class="keyword">isEmail:</span> <span class="keyword">true</span>,
+    <span class="keyword">len:</span> [<span class="number">5</span>, <span class="number">255</span>],
+    <span class="comment">// Custom validation</span>
+    <span class="function">isValidDomain</span>(value: string) {
+      <span class="keyword">if</span> (!value.<span class="function">endsWith</span>(<span class="string">'.com'</span>)) {
+        <span class="keyword">throw new</span> <span class="function">Error</span>(<span class="string">'Email must end with .com'</span>);
+      }
+    }
+  },
+})
+<span class="keyword">email!</span>: string;</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>⚡ Performance</h3>
+                    <ul class="feature-list">
+                        <li>Use indexes for frequently queried columns</li>
+                        <li>Limit data with attributes selection</li>
+                        <li>Paginate large result sets</li>
+                        <li>Use eager loading carefully</li>
+                        <li>Consider database connection pooling</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>🔧 Error Handling</h3>
+                    <div class="code-block">
+<pre><code><span class="keyword">try</span> {
+  <span class="keyword">const</span> <span class="function">interview</span> = <span class="keyword">await</span> Interview.<span class="function">create</span>(data);
+} <span class="keyword">catch</span> (error) {
+  <span class="keyword">if</span> (error.name === <span class="string">'SequelizeValidationError'</span>) {
+    <span class="comment">// Handle validation errors</span>
+    <span class="keyword">return</span> res.<span class="function">status</span>(<span class="number">400</span>).<span class="function">json</span>({
+      <span class="keyword">errors:</span> error.errors.<span class="function">map</span>(e => e.message)
+    });
+  }
+  <span class="comment">// Handle other errors</span>
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🗂️ Model Organization</h3>
+                    <div class="code-block">
+<pre><code><span class="comment">// src/models/index.ts</span>
+<span class="keyword">import</span> { <span class="function">sequelize</span> } <span class="keyword">from</span> <span class="string">'../config/database'</span>;
+
+<span class="comment">// Import all models</span>
+<span class="keyword">import</span> { <span class="function">User</span> } <span class="keyword">from</span> <span class="string">'./user'</span>;
+<span class="keyword">import</span> { <span class="function">Interview</span> } <span class="keyword">from</span> <span class="string">'./interview'</span>;
+
+<span class="comment">// Add to sequelize</span>
+sequelize.<span class="function">addModels</span>([User, Interview]);
+
+<span class="comment">// Define associations</span>
+User.<span class="function">hasMany</span>(Interview);
+Interview.<span class="function">belongsTo</span>(User);
+
+<span class="keyword">export</span> { sequelize, User, Interview };</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                🎯 <strong>Quick Reference Checklist:</strong>
+                <ul class="feature-list">
+                    <li>Always define TypeScript interfaces for models</li>
+                    <li>Use environment variables for database credentials</li>
+                    <li>Implement proper error handling for database operations</li>
+                    <li>Add validation at the model level</li>
+                    <li>Use transactions for multi-step operations</li>
+                    <li>Test your models and associations</li>
+                    <li>Use migrations for schema changes</li>
+                    <li>Monitor query performance in production</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                🎓 <strong>Congratulations!</strong> You've learned the core concepts of Sequelize using real-world examples from our interview system. You now know how to:
+                <br><br>
+                ✅ Set up and configure Sequelize with TypeScript<br>
+                ✅ Define models with proper typing and validation<br>
+                ✅ Create relationships between tables<br>
+                ✅ Perform CRUD operations efficiently<br>
+                ✅ Write complex queries with filtering and joins<br>
+                ✅ Apply best practices for production applications<br>
+                <br>
+                Keep this guide handy as a reference for your future Sequelize projects! 🚀
+            </div>
+        </div>
+
+        <!-- Back to Top Button -->
+        <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+    </div>
+
+    <script>
+        // Section navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+
+            // Update progress
+            updateProgress(sectionId);
+        }
+
+        // Progress tracking
+        function updateProgress(sectionId) {
+            const sections = ['intro', 'setup', 'models', 'relationships', 'crud', 'querying', 'advanced', 'best-practices'];
+            const currentIndex = sections.indexOf(sectionId);
+            const progress = ((currentIndex + 1) / sections.length) * 100;
+            
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = Math.round(progress) + '%';
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('pre code').textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#48bb78';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#667eea';
+                }, 2000);
+            });
+        }
+
+        // Back to top functionality
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', () => {
+            const backToTop = document.getElementById('backToTop');
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        // Initialize progress
+        updateProgress('intro');
+
+        // Add smooth scrolling to internal links
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add intersection observer for auto-progress tracking
+            const sections = document.querySelectorAll('.content-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.id;
+                        updateProgress(sectionId);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
